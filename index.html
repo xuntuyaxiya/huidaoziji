@@ -1,0 +1,515 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#171417" />
+    <meta name="description" content="回到自己——在想联系 TA 的时刻，先陪你慢一点。" />
+    <title>回到自己 · 交互体验</title>
+    <style>
+:root {
+  --night: #24201c;
+  --paper: #f2eadc;
+  --paper-deep: #e8ddcc;
+  --ink: #302b27;
+  --muted: #756e65;
+  --line: #d7cbbb;
+  --plum: #925b49;
+  --plum-light: #b77d67;
+  --plum-pale: #e7d2c4;
+  --rose: #c98f74;
+  --white: #fffaf1;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "PingFang SC", "Microsoft YaHei", sans-serif;
+  color: var(--ink);
+  background: #cec3b3;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; min-width: 320px; min-height: 100%; background: #cec3b3; }
+button, textarea, input { font: inherit; }
+button { color: inherit; cursor: pointer; }
+.demo-shell { position: relative; width: min(100%, 480px); min-height: 100svh; margin: 0 auto; overflow: hidden; background: radial-gradient(circle at 82% 8%, rgba(255,255,255,.34), transparent 28%), repeating-linear-gradient(0deg, rgba(104,80,62,.016) 0 1px, transparent 1px 6px), var(--paper); box-shadow: 0 20px 70px rgba(60, 45, 34, .18); }
+.scene { display: none; min-height: 100svh; padding: max(30px, env(safe-area-inset-top)) 25px calc(118px + env(safe-area-inset-bottom)); animation: enter .38s ease both; }
+.scene.active { display: flex; flex-direction: column; }
+@keyframes enter { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+.brand, .eyebrow { margin: 0; color: var(--plum); font-size: 12px; letter-spacing: .09em; font-weight: 650; }
+h1, h2 { margin: 11px 0 0; letter-spacing: -.045em; font-weight: 560; line-height: 1.16; }
+h1 { font-size: clamp(34px, 9.4vw, 45px); }
+h2 { font-size: clamp(28px, 7.7vw, 37px); }
+.lead, .support-copy { color: var(--muted); font-size: 14px; line-height: 1.75; }
+.lead { max-width: 345px; margin: 19px 0 0; }
+.support-copy { margin: 15px 0 0; }
+.centered { text-align: center; }
+.welcome-mark, .done-mark { width: 86px; height: 86px; margin: 9vh 0 35px; border: 1px solid #bda891; border-radius: 49% 53% 47% 52%; display: grid; place-items: center; transform: rotate(-9deg); }
+.welcome-mark span, .done-mark span { position: relative; width: 39px; height: 39px; border: 1px solid var(--plum-light); border-radius: 50%; }
+.welcome-mark span::after, .done-mark span::after { content: ""; position: absolute; width: 10px; height: 10px; right: 3px; top: 6px; background: var(--rose); border-radius: 50%; }
+.bottom-actions { position: absolute; left: 25px; right: 25px; bottom: calc(27px + env(safe-area-inset-bottom)); display: grid; gap: 5px; }
+.primary { width: 100%; min-height: 54px; border: 0; border-radius: 5px; background: var(--plum); color: var(--white); font-size: 15px; font-weight: 650; box-shadow: 0 8px 20px rgba(99, 58, 43, .13); }
+.primary:disabled { opacity: .36; cursor: default; box-shadow: none; }
+.quiet { min-height: 43px; border: 0; background: transparent; color: var(--muted); font-size: 13px; }
+.back { width: 38px; height: 38px; margin-bottom: 32px; border: 1px solid var(--line); border-radius: 5px; background: rgba(255,255,255,.3); font-size: 28px; line-height: 1; }
+.promise-list { display: grid; gap: 4px; margin-top: 31px; border-top: 1px solid var(--line); }
+.promise-list > div { display: grid; grid-template-columns: 34px 1fr; gap: 8px; align-items: start; padding: 17px 2px; border-bottom: 1px solid var(--line); }
+.promise-list span { color: var(--plum-light); font-size: 11px; }
+.promise-list p { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.55; }
+.promise-list strong { display: block; margin-bottom: 3px; color: var(--ink); font-size: 14px; }
+.phone-time { position: absolute; top: max(17px, env(safe-area-inset-top)); left: 25px; font-size: 12px; font-weight: 650; }
+.dynamic-island { background: #080708; color: white; }
+.dynamic-island.compact { align-self: center; min-width: 178px; padding: 9px 17px; border-radius: 22px; text-align: center; font-size: 12px; }
+.dynamic-island.expanded { align-self: center; width: min(327px, calc(100vw - 52px)); min-height: 69px; border: 0; border-radius: 32px; padding: 11px 15px; display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 10px; text-align: left; }
+.dynamic-island.expanded strong, .dynamic-island.expanded small { display: block; }
+.dynamic-island.expanded strong { font-size: 13px; }
+.dynamic-island.expanded small { margin-top: 3px; color: #bfb8bd; font-size: 11px; font-weight: 400; }
+.dynamic-island.expanded b { padding: 6px 10px; border-radius: 13px; background: #282228; font-size: 11px; font-weight: 550; }
+.island-orb { width: 34px; height: 34px; border-radius: 50%; background: radial-gradient(circle at 66% 35%, #dfb9c7 0 10%, #98708e 12% 29%, #392936 31%); }
+.trigger-copy { margin-top: 72px; }
+.trigger-copy p { color: var(--plum); font-size: 12px; }
+.trigger-copy h2 { font-size: clamp(26px, 7.5vw, 36px); }
+.phone-back { position: relative; width: 170px; height: 240px; margin: 42px auto 0; border: 7px solid #353036; border-radius: 32px; background: linear-gradient(150deg, #eee5e9, #cdbfc7); display: grid; place-items: center; color: #5e505b; font-size: 12px; box-shadow: 0 18px 40px rgba(42,32,40,.15); }
+.phone-back::before { content: ""; position: absolute; width: 38px; height: 38px; left: 13px; top: 13px; border-radius: 50%; background: #39333a; box-shadow: 32px 0 0 #39333a, 0 32px 0 #39333a; }
+.tap-ripple { position: absolute; width: 67px; height: 67px; border: 1px solid rgba(118,80,112,.55); border-radius: 50%; animation: ripple 2s infinite; }
+.tap-ripple.two { animation-delay: .65s; }
+@keyframes ripple { 0% { opacity: 0; transform: scale(.4); } 35% { opacity: 1; } 100% { opacity: 0; transform: scale(1.45); } }
+.safe-note, .local-note { margin: 19px auto 0; max-width: 320px; color: #968c94; font-size: 11px; line-height: 1.55; text-align: center; }
+.island-space { margin: 27vh auto 0; text-align: center; }
+.island-space p { color: var(--plum); font-size: 12px; }
+.island-space h2 { font-size: clamp(27px, 7.5vw, 36px); line-height: 1.25; }
+.topline { display: flex; justify-content: space-between; align-items: center; margin-bottom: 9vh; color: var(--muted); font-size: 11px; }
+.text-link { border: 0; padding: 0; background: transparent; color: var(--muted); font-size: 12px; }
+.grounding-card { display: flex; align-items: center; gap: 14px; margin-top: 38px; padding: 19px; background: rgba(255,255,255,.25); border: 1px solid var(--line); border-radius: 4px; }
+.grounding-card p { margin: 0; color: #635a62; font-size: 13px; line-height: 1.6; }
+.grounding-dot { width: 43px; height: 43px; flex: 0 0 auto; border-radius: 50%; background: radial-gradient(circle at 68% 31%, #dfb49d 0 12%, #b77d67 13% 31%, #925b49 33%); }
+.breath-area { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; transform: translateY(-28px); }
+.breath-area.long { transform: translateY(-9px); }
+.breath-area h2 { font-size: 25px; letter-spacing: -.035em; }
+.breath-area p { color: var(--muted); font-size: 12px; }
+.breath-orb { width: 181px; height: 181px; border-radius: 48% 52% 50% 46%; display: grid; place-items: center; background: var(--plum-pale); box-shadow: 0 0 0 18px rgba(231,210,196,.45); animation: breathe 10s ease-in-out infinite; }
+.breath-orb.large { width: 211px; height: 211px; }
+.breath-orb.large.exhale { animation: none; transform: scale(.88); transition: transform 6s ease-in-out; }
+.breath-orb.large:not(.exhale) { animation: none; transform: scale(1); transition: transform 4s ease-in-out; }
+.breath-orb > span { color: var(--plum); font-size: 42px; font-weight: 430; letter-spacing: -.05em; }
+.breath-orb small { display: block; margin-top: 7px; color: var(--muted); font-size: 11px; letter-spacing: 0; }
+@keyframes breathe { 0%, 100% { transform: scale(.88); } 40% { transform: scale(1); } }
+.flower-breath { position: relative; width: 260px; height: 260px; display: grid; place-items: center; margin-bottom: 7px; }
+.flower-petal { position: absolute; width: 116px; height: 174px; left: 72px; top: 43px; border-radius: 52% 48% 50% 50%; background: rgba(194,118,106,.19); border: 1px solid rgba(146,91,73,.14); transform-origin: 50% 87px; transition: transform 4s ease-in-out, opacity 4s ease-in-out; will-change: transform; }
+.flower-petal:nth-child(1) { --petal-angle: 0deg; }
+.flower-petal:nth-child(2) { --petal-angle: 60deg; }
+.flower-petal:nth-child(3) { --petal-angle: 120deg; }
+.flower-breath.exhale .flower-petal { transform: rotate(var(--petal-angle)) scale(1); opacity: .66; transition-duration: 6s; }
+.flower-breath:not(.exhale) .flower-petal { transform: rotate(var(--petal-angle)) scale(1.5); opacity: 1; transition-duration: 4s; }
+.flower-center { position: relative; z-index: 2; width: 118px; height: 118px; border-radius: 50%; background: rgba(194,132,110,.78); color: var(--white); display: grid; place-content: center; text-align: center; box-shadow: 0 15px 34px rgba(104,61,47,.13); transition: transform 4s ease-in-out; }
+.flower-breath.exhale .flower-center { transform: scale(1.02); transition-duration: 6s; }
+.flower-breath:not(.exhale) .flower-center { transform: scale(1.1); transition-duration: 4s; }
+.flower-center strong { display: block; font-size: 29px; line-height: 1; font-weight: 480; letter-spacing: -.045em; }
+.flower-center small { display: block; max-width: 88px; margin-top: 8px; font-size: 10px; line-height: 1.3; color: #fff0e7; }
+.choice-list { display: grid; gap: 8px; margin-top: 24px; }
+.choice-list button { min-height: 62px; display: flex; align-items: center; justify-content: space-between; padding: 0 15px; border: 1px solid transparent; border-radius: 4px; background: rgba(255,255,255,.26); text-align: left; font-size: 16px; font-weight: 530; }
+.choice-list button span { width: 18px; height: 18px; display: grid; place-items: center; border: 1px solid #c4b6c0; border-radius: 50%; color: var(--plum); }
+.choice-list button.selected { color: var(--plum); border-color: #c69d88; background: rgba(255,250,241,.64); font-weight: 650; }
+.choice-list button.selected span { border: 5px solid var(--plum-light); }
+.choice-list.spacious { margin-top: 34px; }
+.choice-list.spacious button { min-height: 72px; font-size: 17px; }
+.choice-list.spacious button span { border: 0; font-size: 22px; }
+.score-display { display: flex; align-items: baseline; gap: 7px; margin: 41px 0 29px; }
+.score-display strong { color: var(--plum); font-size: 82px; line-height: .8; font-weight: 430; letter-spacing: -.08em; }
+.score-display span { color: var(--muted); font-size: 13px; }
+input[type="range"] { width: 100%; height: 4px; accent-color: var(--plum); }
+.range-ends { display: flex; justify-content: space-between; margin-top: 11px; color: #998e97; font-size: 10px; }
+.lower { position: absolute; left: 25px; right: 25px; bottom: calc(27px + env(safe-area-inset-bottom)); }
+textarea { width: 100%; margin-top: 28px; padding: 17px; border: 1px solid var(--line); border-radius: 4px; outline-color: var(--plum-light); resize: none; background: rgba(255,255,255,.3); color: var(--ink); font-size: 15px; line-height: 1.75; }
+textarea::placeholder { color: #aaa0a7; }
+.friend-card { display: flex; align-items: center; gap: 12px; margin-top: 29px; padding: 16px; background: rgba(255,255,255,.3); border: 1px solid var(--line); border-radius: 4px 4px 0 0; }
+.friend-avatar { width: 45px; height: 45px; border-radius: 13px; display: grid; place-items: center; background: #50b76a; color: white; font-size: 13px; }
+.friend-card strong, .friend-card span { display: block; }
+.friend-card strong { font-size: 16px; }
+.friend-card span { margin-top: 4px; color: var(--muted); font-size: 10px; }
+.message-draft { padding: 16px; border: 1px solid var(--line); border-top: 0; border-radius: 0 0 4px 4px; background: rgba(232,221,204,.65); color: #655c53; font-size: 13px; line-height: 1.65; }
+.center-state { margin: auto; text-align: center; transform: translateY(-30px); }
+.center-state h2 { font-size: 31px; line-height: 1.24; }
+.center-state > p:last-child { color: var(--muted); font-size: 13px; line-height: 1.7; }
+.large-avatar { width: 72px; height: 72px; margin: 0 auto 28px; font-size: 22px; }
+.done-mark { margin: 8vh auto 26px; }
+.scene[data-scene="done"] { text-align: center; }
+.scene[data-scene="done"] h2 { font-size: clamp(27px, 7.5vw, 36px); line-height: 1.25; }
+.result-card { margin: 31px 0 0; padding: 20px; border: 1px solid var(--line); border-radius: 4px; background: rgba(255,255,255,.25); }
+.result-card strong { color: var(--plum); font-size: 37px; font-weight: 500; }
+.result-card p { margin: 5px 0 0; color: var(--muted); font-size: 11px; }
+.toast { position: absolute; z-index: 20; left: 50%; bottom: 95px; max-width: calc(100% - 44px); transform: translate(-50%, 12px); padding: 11px 15px; border-radius: 14px; opacity: 0; pointer-events: none; background: #30282f; color: white; font-size: 12px; text-align: center; transition: .25s ease; }
+.toast.show { opacity: 1; transform: translate(-50%, 0); }
+@media (min-width: 600px) {
+  body { padding: 28px 0; }
+  .demo-shell { min-height: 900px; border-radius: 30px; }
+  .scene { min-height: 900px; }
+}
+@media (max-height: 700px) {
+  .topline { margin-bottom: 6vh; }
+  .welcome-mark, .done-mark { margin-top: 3vh; }
+  .phone-back { height: 205px; margin-top: 25px; }
+  .scene { padding-top: 23px; }
+  .score-display { margin: 27px 0 20px; }
+}
+    </style>
+  </head>
+  <body>
+    <main class="demo-shell" aria-label="回到自己交互体验">
+      <section class="scene active" data-scene="welcome">
+        <div class="welcome-mark" aria-hidden="true"><span></span></div>
+        <p class="brand">回到自己</p>
+        <h1>你不用急着放下。<br />先慢慢回到自己。</h1>
+        <p class="lead">当你很想联系、查看或回头时，我会陪你把决定放慢一点。</p>
+        <div class="bottom-actions">
+          <button class="primary" data-action="start">我想试试看</button>
+          <button class="quiet" data-action="about">它会怎么陪我？</button>
+        </div>
+      </section>
+
+      <section class="scene" data-scene="about">
+        <button class="back" data-action="back-welcome" aria-label="返回">‹</button>
+        <p class="eyebrow">这里不会要求你立刻忘记</p>
+        <h2>只是把“马上行动”，<br />变成“我再想一下”。</h2>
+        <div class="promise-list">
+          <div><span>01</span><p><strong>先接住这一刻</strong>不说教，也不评价你。</p></div>
+          <div><span>02</span><p><strong>给情绪一点时间</strong>用呼吸、书写或真实的人陪你。</p></div>
+          <div><span>03</span><p><strong>把选择还给你</strong>最后怎么做，仍然由你决定。</p></div>
+        </div>
+        <div class="bottom-actions"><button class="primary" data-action="start">开始体验</button></div>
+      </section>
+
+      <section class="scene" data-scene="trigger">
+        <div class="phone-time">22:18</div>
+        <div class="dynamic-island compact">我在，先别急</div>
+        <div class="trigger-copy">
+          <p>真实使用方式</p>
+          <h2>轻点手机背面，<br />从灵动岛找到我。</h2>
+        </div>
+        <div class="phone-back" aria-hidden="true"><div class="tap-ripple one"></div><div class="tap-ripple two"></div><span>轻点两下</span></div>
+        <p class="safe-note">这里仅说明真实入口；Demo 从产品内的陪伴流程开始。</p>
+        <div class="bottom-actions"><button class="primary" data-action="open-intervention">进入干预体验</button></div>
+      </section>
+
+      <section class="scene" data-scene="pause">
+        <div class="topline"><span>回到自己</span><span>此刻</span></div>
+        <p class="eyebrow">你已经停下来了一下</p>
+        <h2>先不做决定。<br />我陪你缓过这一刻。</h2>
+        <p class="support-copy">你不用保证以后都不联系。我们只照顾好接下来的 30 秒。</p>
+        <div class="grounding-card">
+          <span class="grounding-dot"></span>
+          <p>把手机握在手里。<br />感受它的重量。</p>
+        </div>
+        <div class="bottom-actions"><button class="primary" data-action="begin-grounding">陪我待 30 秒</button></div>
+      </section>
+
+      <section class="scene" data-scene="grounding">
+        <div class="topline"><span>先待一会儿</span><button class="text-link" data-action="skip-grounding">跳过</button></div>
+        <div class="breath-area">
+          <div class="flower-breath grounding-flower" id="grounding-flower">
+            <span class="flower-petal"></span><span class="flower-petal"></span><span class="flower-petal"></span>
+            <div class="flower-center"><strong id="grounding-count">30</strong><small id="grounding-cue">慢慢吸气 · 4 秒</small></div>
+          </div>
+          <h2 id="grounding-title">让气息慢慢进来</h2>
+          <p id="grounding-guide">跟着花瓣舒展，不用刻意吸得很深。</p>
+        </div>
+      </section>
+
+      <section class="scene" data-scene="intent">
+        <div class="topline"><span>我在这里</span><span>1 / 2</span></div>
+        <p class="eyebrow">此刻</p>
+        <h2>你现在最想做什么？</h2>
+        <p class="support-copy">选一个最接近的就好。</p>
+        <div class="choice-list" id="intent-choices">
+          <button data-value="发消息或打电话">发消息或打电话<span></span></button>
+          <button data-value="看看对方的动态">看看对方的动态<span></span></button>
+          <button data-value="翻以前的聊天记录">翻以前的聊天记录<span></span></button>
+          <button data-value="只是很想念">只是很想念<span></span></button>
+        </div>
+        <div class="bottom-actions"><button class="primary" data-action="intent-next" disabled>就是这种感觉</button></div>
+      </section>
+
+      <section class="scene" data-scene="intensity">
+        <div class="topline"><button class="text-link" data-action="back-intent">‹ 返回</button><span>2 / 2</span></div>
+        <p class="eyebrow">再感受一下</p>
+        <h2>这股想念，<br />现在有多强？</h2>
+        <p class="support-copy">不用很准确，跟着此刻的感觉选就好。</p>
+        <div class="score-display"><strong id="before-score">8</strong><span>/ 10</span></div>
+        <input id="before-range" type="range" min="1" max="10" value="8" aria-label="这股想念的强度" />
+        <div class="range-ends"><span>还能待一会儿</span><span>快撑不住了</span></div>
+        <div class="bottom-actions"><button class="primary" data-action="start-breath">先陪我 3 分钟</button></div>
+      </section>
+
+      <section class="scene" data-scene="breathing">
+        <div class="topline"><span>我们一起待一会儿</span><button class="text-link" data-action="finish-breath">完成演示</button></div>
+        <div class="breath-area long">
+          <div class="flower-breath" id="flower-breath">
+            <span class="flower-petal"></span><span class="flower-petal"></span><span class="flower-petal"></span>
+            <div class="flower-center"><strong id="breath-count">03:00</strong><small id="breath-cue">慢慢吸气 · 4 秒</small></div>
+          </div>
+          <h2 id="breath-title">让气息慢慢进来</h2>
+          <p id="breath-guide">跟着圆圈：吸气 4 秒，呼气 6 秒。</p>
+        </div>
+        <button class="quiet lower" data-action="write-now">我想把话写下来</button>
+      </section>
+
+      <section class="scene" data-scene="check">
+        <div class="topline"><span>3 分钟过去了</span><span>现在</span></div>
+        <p class="eyebrow">什么答案都可以</p>
+        <h2>现在，有没有<br />稍微松一点？</h2>
+        <p class="support-copy">我只是想知道，接下来怎么陪你。</p>
+        <div class="choice-list spacious">
+          <button data-action="feel-better">好像缓下来一点了<span>›</span></button>
+          <button data-action="still-urge">还是很想联系<span>›</span></button>
+          <button data-action="feel-worse">现在比刚才更难受<span>›</span></button>
+        </div>
+      </section>
+
+      <section class="scene" data-scene="letter">
+        <div class="topline"><button class="text-link" data-action="back-check">‹ 返回</button><span>只留给自己</span></div>
+        <p class="eyebrow">我知道你还有很多话</p>
+        <h2>想说的话，<br />可以先留在这里。</h2>
+        <p class="support-copy">我替你收好，但不会替你发送。</p>
+        <textarea id="letter-text" rows="7" placeholder="我其实想告诉你……"></textarea>
+        <p class="local-note">只保存在当前设备 · 随时可以删除</p>
+        <div class="bottom-actions"><button class="primary" data-action="save-letter">先替我收好</button></div>
+      </section>
+
+      <section class="scene" data-scene="support">
+        <div class="topline"><button class="text-link" data-action="back-check">‹ 返回</button><span>真实的陪伴</span></div>
+        <p class="eyebrow">现在好像还是很难熬</p>
+        <h2>要不要找一个<br />你信任的人陪一下？</h2>
+        <p class="support-copy">不需要解释整件事，只要告诉对方：你现在需要有人在。</p>
+        <div class="friend-card">
+          <div class="friend-avatar">微信</div><div><strong>打开微信</strong><span>由你选择想联系的人</span></div>
+        </div>
+        <div class="message-draft">“我现在有点难受，不用帮我分析。如果方便，可以陪我聊几分钟吗？”</div>
+        <p class="local-note">这只是消息草稿，不会自动发送。</p>
+        <div class="bottom-actions">
+          <button class="primary" data-action="contact-friend">打开微信，选择一个人</button>
+          <button class="quiet" data-action="stay-longer">先继续陪我待一会儿</button>
+        </div>
+      </section>
+
+      <section class="scene" data-scene="contact-confirm">
+        <div class="center-state">
+          <div class="friend-avatar large-avatar">微信</div>
+          <p class="eyebrow">在真实产品中</p>
+          <h2>这里会打开微信。</h2>
+          <p>最后联系谁、是否发送，始终由你确认。不会分享你的评分、记录或关系细节。</p>
+        </div>
+        <div class="bottom-actions"><button class="primary" data-action="to-reflect">我明白了</button></div>
+      </section>
+
+      <section class="scene" data-scene="reflect">
+        <div class="topline"><span>现在再感受一下</span><span>最后一步</span></div>
+        <p class="eyebrow">最难的一小会儿，你走过来了</p>
+        <h2>这股想念，<br />现在还有多强？</h2>
+        <div class="score-display"><strong id="after-score">4</strong><span>/ 10</span></div>
+        <input id="after-range" type="range" min="1" max="10" value="4" aria-label="现在想念的强度" />
+        <p class="support-copy">没有变轻也没关系。你愿意停下来，本身就在照顾自己。</p>
+        <div class="bottom-actions"><button class="primary" data-action="complete">看看这次暂停</button></div>
+      </section>
+
+      <section class="scene" data-scene="done">
+        <div class="done-mark" aria-hidden="true"><span></span></div>
+        <p class="eyebrow">这次暂停完成了</p>
+        <h2>你没有否定想念。<br />只是把选择留给了自己。</h2>
+        <div class="result-card"><strong><span id="result-before">8</span> → <span id="result-after">4</span></strong><p>这股想念的变化</p></div>
+        <p class="support-copy centered" id="done-copy">最难的这一小会儿，你已经走过来了。</p>
+        <div class="bottom-actions">
+          <button class="primary" data-action="restart">再体验一次</button>
+          <button class="quiet" data-action="share-demo">把体验链接分享给朋友</button>
+        </div>
+      </section>
+
+      <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    </main>
+    <script>
+const scenes = [...document.querySelectorAll(".scene")];
+const toast = document.querySelector("#toast");
+const state = { intent: "", before: 8, after: 4, letter: "", supportUsed: false };
+let intervalId = null;
+
+function showScene(name) {
+  window.clearInterval(intervalId);
+  intervalId = null;
+  scenes.forEach((scene) => scene.classList.toggle("active", scene.dataset.scene === name));
+  window.scrollTo({ top: 0, behavior: "instant" });
+}
+
+function showToast(message) {
+  toast.textContent = message;
+  toast.classList.add("show");
+  window.clearTimeout(showToast.timer);
+  showToast.timer = window.setTimeout(() => toast.classList.remove("show"), 2500);
+}
+
+function runTimer(totalSeconds, countElement, cueElement, onDone) {
+  let remaining = totalSeconds;
+  const render = () => {
+    if (totalSeconds > 60) {
+      const minutes = String(Math.floor(remaining / 60)).padStart(2, "0");
+      const seconds = String(remaining % 60).padStart(2, "0");
+      countElement.textContent = `${minutes}:${seconds}`;
+    } else {
+      countElement.textContent = remaining;
+    }
+    if (cueElement) cueElement.textContent = remaining % 10 > 5 ? "慢慢呼气" : "慢慢吸气";
+  };
+  render();
+  intervalId = window.setInterval(() => {
+    remaining -= 1;
+    render();
+    if (remaining <= 0) {
+      window.clearInterval(intervalId);
+      intervalId = null;
+      onDone();
+    }
+  }, 1000);
+}
+
+function runBreathingTimer(totalSeconds, onDone) {
+  const countElement = document.querySelector("#breath-count");
+  const cueElement = document.querySelector("#breath-cue");
+  const guideElement = document.querySelector("#breath-guide");
+  const titleElement = document.querySelector("#breath-title");
+  const flowerElement = document.querySelector("#flower-breath");
+  let remaining = totalSeconds;
+
+  const render = () => {
+    const minutes = String(Math.floor(remaining / 60)).padStart(2, "0");
+    const seconds = String(remaining % 60).padStart(2, "0");
+    const cycleElapsed = (totalSeconds - remaining) % 10;
+    const isInhale = cycleElapsed < 4;
+    const phaseRemaining = isInhale ? 4 - cycleElapsed : 10 - cycleElapsed;
+
+    countElement.textContent = `${minutes}:${seconds}`;
+    cueElement.textContent = `${isInhale ? "慢慢吸气" : "慢慢呼气"} · ${phaseRemaining} 秒`;
+    titleElement.textContent = isInhale ? "让气息慢慢进来" : "把呼气放长一点";
+    guideElement.textContent = isInhale ? "跟着花瓣舒展，不用刻意吸得很深。" : "跟着花瓣合拢，让肩膀也松下来。";
+    flowerElement.classList.toggle("exhale", !isInhale);
+  };
+
+  render();
+  intervalId = window.setInterval(() => {
+    remaining -= 1;
+    render();
+    if (remaining <= 0) {
+      window.clearInterval(intervalId);
+      intervalId = null;
+      onDone();
+    }
+  }, 1000);
+}
+
+function runGroundingTimer(onDone) {
+  const countElement = document.querySelector("#grounding-count");
+  const cueElement = document.querySelector("#grounding-cue");
+  const titleElement = document.querySelector("#grounding-title");
+  const guideElement = document.querySelector("#grounding-guide");
+  const flowerElement = document.querySelector("#grounding-flower");
+  const totalSeconds = 30;
+  let remaining = totalSeconds;
+
+  const render = () => {
+    const cycleElapsed = (totalSeconds - remaining) % 10;
+    const isInhale = cycleElapsed < 4;
+    const phaseRemaining = isInhale ? 4 - cycleElapsed : 10 - cycleElapsed;
+    countElement.textContent = remaining;
+    cueElement.textContent = `${isInhale ? "慢慢吸气" : "慢慢呼气"} · ${phaseRemaining} 秒`;
+    titleElement.textContent = isInhale ? "让气息慢慢进来" : "把呼气放长一点";
+    guideElement.textContent = isInhale ? "跟着花瓣舒展，不用刻意吸得很深。" : "跟着花瓣合拢，让肩膀也松下来。";
+    flowerElement.classList.toggle("exhale", !isInhale);
+  };
+
+  render();
+  intervalId = window.setInterval(() => {
+    remaining -= 1;
+    render();
+    if (remaining <= 0) {
+      window.clearInterval(intervalId);
+      intervalId = null;
+      onDone();
+    }
+  }, 1000);
+}
+
+document.querySelectorAll("[data-action]").forEach((button) => {
+  button.addEventListener("click", async () => {
+    const action = button.dataset.action;
+    if (action === "start") showScene("trigger");
+    if (action === "about") showScene("about");
+    if (action === "back-welcome") showScene("welcome");
+    if (action === "open-intervention") showScene("pause");
+    if (action === "begin-grounding") {
+      showScene("grounding");
+      runGroundingTimer(() => showScene("intent"));
+    }
+    if (action === "skip-grounding") showScene("intent");
+    if (action === "intent-next") showScene("intensity");
+    if (action === "back-intent") showScene("intent");
+    if (action === "start-breath") {
+      showScene("breathing");
+      runBreathingTimer(180, () => showScene("check"));
+    }
+    if (action === "finish-breath") showScene("check");
+    if (action === "write-now" || action === "still-urge") showScene("letter");
+    if (action === "back-check") showScene("check");
+    if (action === "feel-better") showScene("reflect");
+    if (action === "feel-worse") showScene("support");
+    if (action === "save-letter") {
+      state.letter = document.querySelector("#letter-text").value.trim();
+      showToast("这段话已经替你收好，不会发送");
+      window.setTimeout(() => showScene("reflect"), 600);
+    }
+    if (action === "contact-friend") { state.supportUsed = true; showScene("contact-confirm"); }
+    if (action === "stay-longer") {
+      showScene("breathing");
+      runBreathingTimer(180, () => showScene("reflect"));
+    }
+    if (action === "to-reflect") showScene("reflect");
+    if (action === "complete") {
+      document.querySelector("#result-before").textContent = state.before;
+      document.querySelector("#result-after").textContent = state.after;
+      document.querySelector("#done-copy").textContent = state.after < state.before ? "最难的这一小会儿，你已经走过来了。" : "感觉还在，也没关系。你已经为自己争取了一次暂停。";
+      showScene("done");
+    }
+    if (action === "restart") {
+      state.intent = ""; state.before = 8; state.after = 4; state.letter = ""; state.supportUsed = false;
+      document.querySelector("#before-range").value = 8; document.querySelector("#before-score").textContent = 8;
+      document.querySelector("#after-range").value = 4; document.querySelector("#after-score").textContent = 4;
+      document.querySelector("#letter-text").value = "";
+      document.querySelectorAll("#intent-choices button").forEach((item) => item.classList.remove("selected"));
+      document.querySelector('[data-action="intent-next"]').disabled = true;
+      showScene("welcome");
+    }
+    if (action === "share-demo") {
+      const data = { title: "回到自己 · 交互体验", text: "当你很想联系 TA 时，先陪自己慢一点。", url: window.location.href };
+      if (navigator.share) {
+        try { await navigator.share(data); } catch {}
+      } else if (navigator.clipboard) {
+        await navigator.clipboard.writeText(window.location.href);
+        showToast("体验链接已复制");
+      } else {
+        showToast("请复制浏览器地址分享");
+      }
+    }
+  });
+});
+
+document.querySelectorAll("#intent-choices button").forEach((button) => {
+  button.addEventListener("click", () => {
+    state.intent = button.dataset.value;
+    document.querySelectorAll("#intent-choices button").forEach((item) => item.classList.toggle("selected", item === button));
+    document.querySelector('[data-action="intent-next"]').disabled = false;
+  });
+});
+
+document.querySelector("#before-range").addEventListener("input", (event) => {
+  state.before = Number(event.target.value);
+  document.querySelector("#before-score").textContent = state.before;
+});
+
+document.querySelector("#after-range").addEventListener("input", (event) => {
+  state.after = Number(event.target.value);
+  document.querySelector("#after-score").textContent = state.after;
+});
+    </script>
+  </body>
+</html>
